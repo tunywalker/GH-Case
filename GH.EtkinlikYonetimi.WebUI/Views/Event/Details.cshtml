@@ -1,0 +1,341 @@
+﻿@model GH.EventManagement.Entities.Models.Event
+
+@{
+	ViewData["Title"] = "Etkinlik Detayları - " + Model.Title;
+	ViewBag.PageTitle = "Etkinlik Detayları";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+	.event-image {
+		max-width: 100%;
+		border-radius: 10px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
+	.event-label {
+		font-weight: 600;
+		color: #333;
+	}
+
+	.tab-pane {
+		padding-top: 20px;
+	}
+
+	.btn-back {
+		background-color: #1e3c72;
+		color: #fff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 6px;
+	}
+
+		.btn-back:hover {
+			background-color: #16345f;
+			color: #fff;
+		}
+</style>
+
+<div class="container py-5">
+	<div id="success-alert" class="alert alert-success d-none" role="alert">
+		Güncelleme başarıyla kaydedildi.
+	</div>
+	<div id="error-alert" class="alert alert-danger d-none" role="alert">
+		Hata oluştu.
+	</div>
+
+	<ul class="nav nav-tabs" id="eventTab" role="tablist">
+		<li class="nav-item" role="presentation">
+			<button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">
+				Detaylar
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="participants-tab" data-bs-toggle="tab" data-bs-target="#participants" type="button" role="tab" aria-controls="participants" aria-selected="false">
+				Katılımcılar (<span id="participant-count">@Model.EventParticipants?.Count</span>)
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="open-participant-form" data-bs-toggle="tab" data-bs-target="#addparticipants" type="button" role="tab" aria-controls="addparticipants" aria-selected="true">
+				Katılımcı Ekle
+			</button>
+		</li>
+	</ul>
+
+	<div class="tab-content" id="eventTabContent">
+
+		<div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+			<div class="row mt-4 align-items-start">
+				<div class="col-md-4 mb-3 mb-md-0">
+					@if (!string.IsNullOrEmpty(Model.ImageUrl))
+					{
+						<img src="@Model.ImageUrl" alt="Etkinlik Görseli" class="event-image" id="event-image" />
+					}
+				</div>
+				<div class="col-md-8">
+					<h3 class="mb-4 text-primary">
+						<span class="editable" data-field="Title">@Model.Title</span>
+					</h3>
+					<div class="mb-2">
+						<span class="event-label">Başlangıç Tarihi:</span>
+						<span class="editable" data-field="StartDate">@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")</span>
+					</div>
+					<div class="mb-2">
+						<span class="event-label">Bitiş Tarihi:</span>
+						<span class="editable" data-field="EndDate">@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")</span>
+					</div>
+					<div class="mb-2">
+						<span class="event-label">Yer:</span>
+						<span class="editable" data-field="Location">@Model.Location</span>
+					</div>
+					<div class="mb-2">
+						<span class="event-label">Açıklama:</span>
+						<span class="editable" data-field="Description">@Model.Description</span>
+					</div>
+					<div class="mb-2">
+						<span class="event-label">Etkinliğin Türü:</span>
+						<span class="editable" data-field="Type">@Model.Type</span>
+					</div>
+					<div class="mb-2">
+						<span class="event-label">Resim Lokasyonu:</span>
+						<span class="editable" data-field="ImageUrl">@Model.ImageUrl</span>
+					</div>
+					<div class="text-end mt-4">
+						<a class="btn btn-back" href="@Url.Action("Index", "Event")">← Listeye Geri Dön</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participants-tab">
+			<div class="mt-4">
+				@if (Model.EventParticipants != null && Model.EventParticipants.Any())
+				{
+					<ul class="list-group">
+						@foreach (var eventParticipant in Model.EventParticipants.Select((ep, i) => new { ep, i }))
+						{
+							<li class="list-group-item" style="max-width: 80%;">
+								<div class="d-flex justify-content-between align-items-center">
+									<div>
+										<strong>@(eventParticipant.i + 1). @eventParticipant.ep.Participant.FirstName @eventParticipant.ep.Participant.LastName</strong>
+										<div class="small text-muted">@eventParticipant.ep.Participant.Email</div>
+									</div>
+									<button class="btn btn-outline-danger rounded-circle d-flex align-items-center justify-content-center delete-participant-btn"
+											data-id="@eventParticipant.ep.ParticipantId"
+											data-event-id="@Model.Id"
+											style="width: 36px; height: 36px;" title="Sil">
+										-
+									</button>
+								</div>
+							</li>
+						}
+					</ul>
+				}
+				else
+				{
+					<div class="alert alert-info" id="no-participants-message">
+						Bu etkinlik için henüz katılımcı eklenmemiş.
+						<br />
+						<a href="javascript:void(0);" id="show-participant-select" class="mt-2 d-inline-block">Katılımcı eklemek için buraya tıklayın</a>
+					</div>
+				}
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="addparticipants" role="tabpanel" aria-labelledby="addparticipants-tab">
+			<div id="add-participant-content">Yükleniyor...</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			console.log("Script çalışıyor");
+
+			// Satır içi düzenleme işlevi
+			$('.editable').on('click', function () {
+				const $span = $(this);
+				const field = $span.data('field');
+				const currentValue = $span.text().trim();
+				if ($span.find('input').length) return;
+
+				const isLongField = (field === "ImageUrl");
+				const inputStyle = isLongField ? 'width: 100%;' : 'width: auto;';
+				const $input = $('<input type="text" class="form-control d-inline">').val(currentValue).attr('style', inputStyle);
+
+				$span.html($input);
+				$input.focus();
+
+				$input.on('blur', function () {
+					const newValue = $input.val().trim();
+
+					if (newValue === "") {
+						$('#success-alert').hide();
+						$('#error-alert').text("Bu alan boş bırakılamaz.").removeClass('d-none').fadeIn().delay(2000).fadeOut();
+						$span.text(currentValue);
+						return;
+					}
+
+					if (newValue !== currentValue) {
+						$.ajax({
+							url: '/Event/UpdateSingleField',
+							type: 'POST',
+							contentType: 'application/json',
+							data: JSON.stringify({
+								eventId: @Model.Id,
+								field: field,
+								value: newValue
+							}),
+							success: function () {
+								$span.text(newValue);
+								$('#error-alert').hide();
+								$('#success-alert').text("Başarıyla güncellendi.").removeClass('d-none').fadeIn().delay(1000).fadeOut();
+
+								if (field === "ImageUrl") {
+									$('#event-image').attr('src', newValue + '?v=' + new Date().getTime());
+								}
+							},
+							error: function (xhr) {
+								const message = xhr.responseText || "Güncelleme başarısız.";
+								$('#success-alert').hide();
+								$('#error-alert').text(message).removeClass('d-none').fadeIn().delay(2000).fadeOut();
+								$span.text(currentValue);
+							}
+						});
+					} else {
+						$span.text(currentValue);
+					}
+				});
+			});
+
+			// Resme tıklayarak düzenlemeyi tetikle
+			$('.editable-image').on('click', function () {
+				$('[data-field="ImageUrl"]').trigger('click');
+			});
+
+			// Katılımcı seçme sekmesini göster
+			$('#show-participant-select').on('click', function () {
+				const tab = new bootstrap.Tab(document.querySelector('#open-participant-form'));
+				tab.show();
+			});
+
+			// Katılımcı formunu gönder
+			$(document).on('submit', '#participant-form', function (e) {
+				e.preventDefault();
+				const selected = $('input[name="selectedParticipants"]:checked')
+					.map(function () { return $(this).val(); }).get();
+
+				$.ajax({
+					url: '/Event/AddParticipants',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({
+						eventId: @Model.Id,
+						participantIds: selected
+					}),
+					success: function () {
+						location.reload();
+					},
+					error: function () {
+						alert("Katılımcılar eklenirken bir hata oluştu.");
+					}
+				});
+			});
+
+			// Katılımcı silme işlevi
+			$(document).on('click', '.delete-participant-btn', function () {
+				const $btn = $(this);
+				const participantId = $btn.data('id');
+				const eventId = $btn.data('event-id');
+				const $li = $btn.closest('li');
+
+				if (!confirm("Bu katılımcıyı bu etkinlikten silmek istiyor musunuz?")) return;
+
+				$.ajax({
+					url: '/Event/RemoveParticipant',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({
+						eventId: eventId,
+						participantId: participantId
+					}),
+					success: function () {
+						$li.remove();
+
+						// Katılımcı sayısını güncelle
+						const $count = $('#participant-count');
+						const current = parseInt($count.text());
+						const newCount = Math.max(current - 1, 0);
+						$count.text(newCount);
+
+						// Katılımcı kalmadıysa mesajı göster
+						if (newCount === 0) {
+							$('.list-group').remove();
+							$('#no-participants-message').removeClass('d-none');
+						}
+					},
+					error: function () {
+						showToast("Silme işlemi sırasında bir hata oluştu.", "danger");
+					}
+				});
+			});
+
+			function showToast(message, type = "success") {
+				const $toast = $(`
+					<div class="alert alert-${type} toast-message" role="alert">
+						${message}
+					</div>
+				`);
+
+				$('body').append($toast);
+				setTimeout(() => {
+					$toast.fadeOut(500, function () {
+						$(this).remove();
+					});
+				}, 2000);
+			}
+
+			// Katılımcı arama işlevi (başlangıçta ana katılımcı listesi için, gereksiz olabilir)
+			$(document).on('input', '#participant-search', function () {
+				const query = $(this).val().toLowerCase();
+				$('#participant-list li').each(function () {
+					const text = $(this).text().toLowerCase();
+					$(this).toggle(text.includes(query));
+				});
+			});
+
+			// Sekmeye tıklanınca katılımcı ekleme formu içeriğini yükle
+			$('#open-participant-form').on('click', function () {
+				const eventId = window.location.pathname.split('/').pop();
+				console.log("🟢 Katılımcı Ekle tıklandı, Etkinlik ID:", eventId);
+
+				$.get(`/Event/LoadAddParticipantForm?eventId=${eventId}`, function (html) {
+					console.log("✅ Kısmi HTML yüklendi");
+					$('#add-participant-content').html(html);
+				}).fail(function () {
+					console.error("❌ AJAX başarısız oldu");
+				});
+			});
+
+			// Dinamik olarak yüklenen katılımcı listesi için arama işlevi
+			$(document).on('input', '#participant-list-search', function () {
+				const query = $(this).val().toLowerCase().trim();
+
+
+				$('#participant-list li').each(function () {
+					const text = $(this).text().toLowerCase().trim();
+					const matched = text.includes(query);
+
+
+					if (matched) {
+						$(this).show();
+					} else {
+						$(this).hide();
+					}
+				});
+			});
+		});
+	</script>
+}

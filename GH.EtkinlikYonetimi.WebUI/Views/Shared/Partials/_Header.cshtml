@@ -1,0 +1,101 @@
+﻿<header class="header">
+    <div class="header__top">
+        <div class="header__top-inner">
+            <div class="container">
+                <div class="header__body">
+                    <div class="header__logo">
+                        <a href="/" class="header__logo-link">
+                            <picture class="header__logo-figure">
+                                <source srcset="/images/logo/icon.svg" media="(max-width: 767.98px)">
+                                <img class="header__logo-img" src="/images/logo/logo.png" height="48" alt="Logo">
+                            </picture>
+                        </a>
+                    </div>
+                    <div class="header-side">
+                        <nav class="header__nav">
+
+                            <ul class="header__nav-list">
+                                <li class="header__nav-item">
+                                    <a class="header__nav-link -empty" href="/">GH Event Management</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="header-burger-menu--wrapper d-xl-none">
+                            <button class="header-burger-menu">
+                                <span class="header-burger-menu--line"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header__mobile-menu">
+            <ul class="header__mobile-menu-list">                
+                <li class="header__mobile-menu-item">
+                    <h5 class="header__mobile-menu-title">Etkinlik</h5>
+                    <ul class="header__mobile-menu-sub-list active">
+                        <li class="header__mobile-menu-sub-item">
+                            <a class="header__mobile-menu-sub-sub-link" href="/basvuru-sirasinda-istenen-belgeler">
+                                Etkinlik
+                                Ekle
+                            </a>
+                           
+                        </li>
+                        
+                        </li>
+                    </ul>
+                </li>
+                <li class="header__mobile-menu-item">
+                    <h5 class="header__mobile-menu-title">Katılımcı</h5>
+                    <ul class="header__mobile-menu-sub-list active">
+                        <li class="header__mobile-menu-sub-item">
+                            <a class="header__mobile-menu-sub-sub-link" href="/basvuru-sirasinda-istenen-belgeler">
+                                Katılımcı
+                                Ekle
+                            </a>
+                           
+                        </li>
+                        
+                        </li>
+                    </ul>
+                </li>
+
+
+
+
+            </ul>
+        </div>
+        <mark class="header__darkarea">
+        </mark>
+    </div>      
+
+    <!-- Desktop Menu -->
+    <div class="header__main">
+        <div class="container">
+            <div class="header__body">
+                
+                <nav class="header__nav">
+                    <ul class="header__nav-list">
+                        <li class="header__nav-item">
+                            <h5 class="header__nav-link">Etkinlik</h5>
+                            <ul class="header__nav-sub-list">
+                                <li class="header__nav-sub-item">
+                                    <a class="header__nav-sub-link" asp-controller="Event" asp-action="Create">Etkinlik Ekle</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="header__nav-item">
+                            <h5 class="header__nav-link">Katılımcılar</h5>
+                            <ul class="header__nav-sub-list">
+                                <li class="header__nav-sub-item">
+                                    <a class="header__nav-sub-link" asp-controller="Participant" asp-action="Create">Katılımcı Ekle</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div id="header__nav-curtain" class="header__nav-curtain"></div>
+    </div>
+</header>

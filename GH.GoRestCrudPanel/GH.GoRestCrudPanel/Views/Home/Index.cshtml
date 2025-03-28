@@ -1,0 +1,35 @@
+﻿@{
+	ViewData["Title"] = "Anasayfa";
+	ViewBag.PageTitle = "GoRestAjaxCrud SPA Tablosu";
+}
+<div class="container-fluid px-1">
+	<div class="container py-4" id="event-form">
+		<div class="d-flex justify-content-end mb-3">
+			<button id="addUserBtn" class="btn btn-success">
+				<i class="bi bi-plus-circle"></i> Yeni Ekle
+			</button>
+		</div>
+		<table id="usersTable" class="statistics-table partnership-form">
+			<thead>
+				<tr>
+				
+					<th>#</th>
+					<th>Adı</th>
+					<th>E-posta</th>
+					<th>Cinsiyet</th>
+					<th>Durum</th>
+					<th>İşlem</th>
+				</tr>
+			</thead>
+			<tbody id="userTableBody">
+			</tbody>
+		</table>
+	</div>
+</div>
+
+@section Scripts {
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+	<link rel="stylesheet" href="~/css/customtablse.css" />
+	<script src="~/js/usertable.js"></script>
+}

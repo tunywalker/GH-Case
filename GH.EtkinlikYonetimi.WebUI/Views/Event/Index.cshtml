@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Etkinlikler";
+    ViewBag.PageTitle = "Etkinlikler";
+    var now = DateTime.Now;
+}
+<div class="container-fluid px-1">
+    <!-- Arama ve Görünüm Seçici -->
+    <div class="d-flex justify-content-between align-items-center my-4 flex-wrap gap-3">
+        <form method="get" class="d-flex flex-grow-1 gap-2">
+            <input name="search" class="form-control" placeholder="Etkinlik ya da mekan ara..." value="@ViewBag.Search" />
+            <input type="date" name="startDate" class="form-control" value=""/>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i> Ara
+            </button>
+
+        </form>
+    </div>
+
+    <!-- Arama Sonucu -->
+    @if (ViewBag.TotalResults > 0)
+    {
+        <div class="alert" style="background-color: #f1f1f1; color: #333;">
+            Toplam @ViewBag.TotalResults etkinlik bulundu.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">Hiçbir etkinlik bulunamadı.</div>
+    }
+
+    <!-- Etkinlik Kartları -->
+    <div class="container py-4">
+        <div class="row g-3" id="eventContainer">
+            @foreach (var evt in Model)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                    <a href="@Url.Action("Details", "Event", new { id = evt.Id })" class="text-decoration-none">
+
+                    <div class="event-card-modern">
+                        <div class="event-card-header">
+
+                                <img src="@evt.ImageUrl" alt="@evt.Title" class="event-image" style="margin-top: -20px;" />
+                                <span class="badge event-type" style="background-color: #ff8708;">@evt.Type</span>
+                        </div>
+                        <div class="event-card-body">
+                            <h5 class="event-title text-center">@evt.Title</h5>
+
+                            <!-- Divider (Çizgi) Başlık Altında -->
+                            <div class="divider"></div>
+
+                            <!-- Tarih ve Konum -->
+                            <div class="event-meta">
+                                <i class="bi bi-calendar-event"></i>
+                                @evt.StartDate.ToString("dd MMMM yyyy")
+                                <span class="separator">·</span>
+                                    <br /><i class="bi bi-geo-alt"></i>
+                                <span>@evt.Location</span>
+                            </div>
+
+                            <!-- Başlangıç-Bitiş -->
+                            <div class="event-meta">
+                                <span><strong>Başlangıç-Bitiş:</strong> @evt.StartDate.ToString("HH:mm") - @evt.EndDate.ToString("HH:mm")</span>
+                            </div>
+
+                            <p class="event-description">
+                                @evt.Description?.Substring(0, Math.Min(100, evt.Description.Length))...
+                            </p>
+                        </div>
+
+                        <div class="event-card-footer">
+                            
+                        </div>
+                    </div>
+                    </a>
+                </div>
+                
+            }
+        </div>
+
+        <!-- Sayfalama -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                @if (ViewBag.TotalPages > 1)
+                {
+                    for (var i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @((i == ViewBag.CurrentPage) ? "active" : "")">
+                            <a class="page-link" href="?page=@i&search=@ViewBag.Search&startDate=@ViewBag.StartDate&location=@ViewBag.Location">@i</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
